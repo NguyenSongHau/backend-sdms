@@ -161,6 +161,7 @@ class UserUpdateSerializer(serializers.Serializer):
 	gender = serializers.CharField(max_length=1, required=False)
 	address = serializers.CharField(max_length=255, required=False)
 	phone = serializers.CharField(max_length=15, required=False)
+	identification = serializers.CharField(max_length=12, required=False)  # Add identification
 	# Cho Manager
 	certificate = serializers.CharField(max_length=255, required=False)
 	# Cho Specialist
