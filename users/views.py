@@ -36,7 +36,7 @@ class UserViewSet(viewsets.ViewSet):
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
 
-		return Response(data={"message": "Đăng ký tài khoản thành công"}, status=status.HTTP_201_CREATED)
+		return Response(data={"message": "Đăng ký tài khoản thành công."}, status=status.HTTP_201_CREATED)
 
 	@action(methods=["get"], detail=False, url_path="current-user")
 	def current_user(self, request):
