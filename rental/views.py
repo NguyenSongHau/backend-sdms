@@ -151,10 +151,10 @@ class BedViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retrieve
 			return Response(data={"message": "Giường đã được thuê trước đó."}, status=status.HTTP_400_BAD_REQUEST)
 
 		if request.user.gender == User.Gender.UNKNOWN:
-			return Response(data={"message": "Vui lòng cập nhật giới tính."}, status=status.HTTP_400_BAD_REQUEST)
+			return Response(data={"message": "Vui lòng cập nhật giới tính!"}, status=status.HTTP_400_BAD_REQUEST)
 
 		if request.user.gender != bed.room.room_for:
-			return Response(data={"message": "Giường không phù hợp với giới tính của bạn."}, status=status.HTTP_400_BAD_REQUEST)
+			return Response(data={"message": "Giường không phù hợp với giới tính của bạn!"}, status=status.HTTP_400_BAD_REQUEST)
 
 		rental_contact = student.rental_contacts.create(bed=bed, time_rental=time_rental)
 
@@ -209,7 +209,7 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
 		specialist = request.user.specialist
 
 		if rental_contact.status != RentalContact.Status.PROCESSING:
-			return Response(data={"message": "Hồ sơ đã được xử lý."}, status=status.HTTP_400_BAD_REQUEST)
+			return Response(data={"message": "Duyệt hồ sơ thành công."}, status=status.HTTP_400_BAD_REQUEST)
 
 		rental_contact.status = RentalContact.Status.SUCCESS
 		rental_contact.save()
@@ -221,7 +221,7 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
 	@action(methods=["post"], detail=True, url_path="reject")
 	def reject(self, request, pk=None):
 		rental_contact = self.get_object()
-		return update_status(rental_contact=rental_contact, new_status=RentalContact.Status.FAIL, message="Từ chối hồ sơ thành công.")
+		return update_status(rental_contact=rental_contact, new_status=RentalContact.Status.FAIL, message="Đã từ chối hồ sơ.")
 
 
 class BillRentalContactViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveDestroyAPIView):

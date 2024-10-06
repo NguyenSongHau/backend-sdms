@@ -116,7 +116,7 @@ class BedSerializer(BaseSerializer):
 			number_of_beds = room.number_of_bed
 
 			if existing_beds_count >= number_of_beds:
-				raise serializers.ValidationError({"message": f"Phòng {room.name} đã đủ {number_of_beds} giường."})
+				raise serializers.ValidationError({"message": f"{room.name} đã đủ {number_of_beds} giường."})
 
 		return data
 

@@ -18,7 +18,7 @@ class User(AbstractUser, BaseModel):
 		FEMALE = "F", _("Nữ")
 		UNKNOWN = "U", _("Khác")
 
-	email = models.EmailField(null=False, blank=False, unique=True, db_index=True)
+	email = models.EmailField(null=False, blank	=False, unique=True, db_index=True)
 	avatar = CloudinaryField("images", null=True, blank=True)
 	full_name = models.CharField(max_length=255, null=False, blank=False)
 	dob = models.DateField(null=False, blank=False)
