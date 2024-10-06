@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "192.168.1.3", ".vercel.app"]
+ALLOWED_HOSTS = ["127.0.0.1", "192.168.1.3", ".vercel.app", "now.sh"]
 
 INTERNAL_IPS = ["127.0.0.1"]
 
@@ -94,12 +94,12 @@ pymysql.install_as_MySQLdb()
 # Database configuration using environment variables
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.getenv('POSTGRES_DATABASE'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_DB_PORT'),
+        'PORT': os.getenv('POSTGRES_DB_PORT')
     }
 }
 
@@ -134,6 +134,8 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
 
 MEDIA_URL = "/media/"
 
