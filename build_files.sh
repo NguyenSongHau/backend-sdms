@@ -1,2 +1,7 @@
+#!/bin/bash
+
+# Cài đặt các thư viện từ requirements.txt
 pip install -r requirements.txt
-python manage.py collectstatic
+
+# Chạy lệnh collectstatic
+python manage.py collectstatic --noinput
