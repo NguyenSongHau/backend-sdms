@@ -19,5 +19,7 @@
       "src": "/(.*)",
       "dest": "core/wsgi.py"
     }
-  ]
+  ],
+
+   "outputDirectory": "staticfiles_build"
 }
