@@ -137,15 +137,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build/static")
 
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
-
-
-# Media files configuration using Azure Blob Storage
-# MEDIA_URL và MEDIA_ROOT đã được cấu hình lại dưới đây
-MEDIA_URL = f"https://your-custom-domain/{os.getenv('AZURE_CONTAINER')}/"
-MEDIA_ROOT = None
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -190,6 +184,9 @@ DEBUG_TOOLBAR_CONFIG = {
 AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
 AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
 AZURE_CONTAINER = os.getenv('AZURE_CONTAINER')
+
+MEDIA_URL = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/"
+MEDIA_ROOT = None
 
 # Azure Storage settings
 DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
