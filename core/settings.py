@@ -99,7 +99,7 @@ pymysql.install_as_MySQLdb()
 # Database configuration using environment variables
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DATABASE'),
         'USER': os.getenv('USER'),
         'PASSWORD': os.getenv('PASSWORD'),
