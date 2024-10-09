@@ -14,7 +14,9 @@ import os
 from pathlib import Path
 
 import pymysql
+from django.conf.global_settings import SECRET_KEY
 from dotenv import load_dotenv
+from six import print_
 
 # Import Azure Storage backend
 from storages.backends.azure_storage import AzureStorage
@@ -29,6 +31,7 @@ load_dotenv()
 load_dotenv(".env.development.local")
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -101,11 +104,11 @@ pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DATABASE'),
-        'USER': os.getenv('USER'),
-        'PASSWORD': os.getenv('PASSWORD'),
-        'HOST': os.getenv('HOST'),
-        'PORT': os.getenv('PORT')
+        'NAME': os.getenv('POSTGRES_DATABASE'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': '5432'
     }
 }
 
