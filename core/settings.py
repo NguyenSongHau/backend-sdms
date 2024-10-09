@@ -97,6 +97,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 pymysql.install_as_MySQLdb()
 
 # Database configuration using environment variables
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
