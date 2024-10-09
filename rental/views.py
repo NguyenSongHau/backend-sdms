@@ -141,20 +141,19 @@ class BedViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retrieve
 		return [permissions.AllowAny()]
 
 	@action(methods=["post"], detail=True, url_path="rent")
+	@action(methods=["post"], detail=True, url_path="rent")
 	def rent_bed(self, request, pk=None):
-		time_rental = request.data.get("time_rental")
+		# Thiết lập time_rental mặc định là 12 tháng
+		time_rental = 12  # giá trị mặc định là 12 tháng
 		student = request.user.student
 		bed = self.get_object()
-
-		existing_rental_contact = RentalContact.objects.filter(bed=bed, student=student).exists()
-		if existing_rental_contact:
-			return Response(data={"message": "Giường đã được thuê trước đó."}, status=status.HTTP_400_BAD_REQUEST)
 
 		if request.user.gender == User.Gender.UNKNOWN:
 			return Response(data={"message": "Vui lòng cập nhật giới tính!"}, status=status.HTTP_400_BAD_REQUEST)
 
 		if request.user.gender != bed.room.room_for:
-			return Response(data={"message": "Giường không phù hợp với giới tính của bạn!"}, status=status.HTTP_400_BAD_REQUEST)
+			return Response(data={"message": "Giường không phù hợp với giới tính của bạn!"},
+							status=status.HTTP_400_BAD_REQUEST)
 
 		rental_contact = student.rental_contacts.create(bed=bed, time_rental=time_rental)
 
@@ -214,8 +213,12 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
 		rental_contact.status = RentalContact.Status.SUCCESS
 		rental_contact.save()
 
-		serializer = self.get_serializer_class()(rental_contact)
+		# Update the bed status to NONVACUITY
+		bed = rental_contact.bed
+		bed.status = Bed.Status.NONVACUITY  # Assuming NONVACUITY is defined in the Bed model
+		bed.save()
 
+		serializer = self.get_serializer_class()(rental_contact)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 	@action(methods=["post"], detail=True, url_path="reject")

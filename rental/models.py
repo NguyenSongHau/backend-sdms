@@ -18,7 +18,7 @@ class Room(BaseModel):
 		FEMALE = "F", "Nữ"
 
 	name = models.CharField(max_length=255, null=False, blank=False)
-	image = CloudinaryField("images", null=False, blank=False)
+	image = models.ImageField(upload_to='', null=True, blank=True)
 	number_of_bed = models.IntegerField(null=True, blank=True)
 	type = models.CharField(max_length=255, null=False, blank=False, choices=Type.choices, default=Type.NORMAL)
 	room_for = models.CharField(max_length=255, null=False, blank=False, choices=RoomFor.choices, default=RoomFor.MALE)
@@ -34,7 +34,7 @@ class Room(BaseModel):
 
 class Post(BaseModel):
 	name = models.CharField(max_length=255, null=False, blank=False)
-	image = CloudinaryField("images", null=False, blank=False)
+	image = models.ImageField(upload_to='', null=True, blank=True)
 	description = CKEditor5Field("Text", config_name="extends")
 
 	room = models.OneToOneField(to=Room, null=False, blank=False, on_delete=models.CASCADE, related_name="post")
@@ -50,7 +50,7 @@ class Bed(BaseModel):
 
 	name = models.CharField(max_length=255, null=False, blank=False)
 	price = models.FloatField(null=True, blank=True)
-	image = CloudinaryField("images", null=False, blank=False)
+	image = models.ImageField(upload_to='', null=True, blank=True)
 	description = CKEditor5Field("Text", config_name="extends")
 	status = models.CharField(max_length=255, null=False, blank=False, choices=Status.choices, default=Status.VACUITY)
 
@@ -66,6 +66,8 @@ class Bed(BaseModel):
 
 
 class RentalContact(BaseModel):
+	objects = None
+
 	class Status(models.TextChoices):
 		CANCEL = "CANCEL", "Hủy"
 		PROCESSING = "PROCESSING", "Đang xử lý"

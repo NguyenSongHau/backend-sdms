@@ -13,10 +13,13 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
-import cloudinary
-import cloudinary.uploader
 import pymysql
 from dotenv import load_dotenv
+
+# Import Azure Storage backend
+from storages.backends.azure_storage import AzureStorage
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +34,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "192.168.1.3", ".vercel.app", "now.sh"]
+ALLOWED_HOSTS = ["127.0.0.1", "192.168.1.4", ".vercel.app", "now.sh"]
 
 INTERNAL_IPS = ["127.0.0.1"]
 
@@ -52,6 +55,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "debug_toolbar",
     "django_ckeditor_5",
+    "storages",
     # My App
     "users.apps.UsersConfig",
     "interacts.apps.InteractsConfig",
@@ -95,12 +99,11 @@ pymysql.install_as_MySQLdb()
 # Database configuration using environment variables
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_DATABASE'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_DB_PORT')
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DATABASE'),
+        'USER': os.getenv('USER'),
+        'PASSWORD': os.getenv('PASSWORD'),
+        'HOST': os.getenv('HOST')
     }
 }
 
@@ -136,12 +139,13 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
 
 
-MEDIA_URL = "/media/"
-
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# Media files configuration using Azure Blob Storage
+# MEDIA_URL và MEDIA_ROOT đã được cấu hình lại dưới đây
+MEDIA_URL = f"https://your-custom-domain/{os.getenv('AZURE_CONTAINER')}/"
+MEDIA_ROOT = None
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -182,13 +186,13 @@ DEBUG_TOOLBAR_CONFIG = {
     "SHOW_COLLAPSED": True,
 }
 
-# Cloudinary configuration using environment variables
-cloudinary.config(
-    secure=True,
-    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-    api_key=os.getenv('CLOUDINARY_API_KEY'),
-    api_secret=os.getenv('CLOUDINARY_API_SECRET')
-)
+# Azure Blob Storage configuration
+AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
+AZURE_CONTAINER = os.getenv('AZURE_CONTAINER')
+
+# Azure Storage settings
+DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
 
 # CKEditor 5 configurations
 customColorPalette = [
