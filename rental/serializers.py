@@ -124,7 +124,7 @@ class BedSerializer(BaseSerializer):
 class RentalContactSerializer(BaseSerializer):
 	class Meta:
 		model = RentalContact
-		fields = ["id", "rental_number", "time_rental", "status", "created_date", "updated_date", "bed", "student", "room"]
+		fields = ["id", "rental_number", "time_rental", "status", "created_date", "updated_date", "bed", "student"]
 
 	def to_representation(self, rental_contact):
 		data = super().to_representation(rental_contact)
@@ -136,8 +136,6 @@ class RentalContactSerializer(BaseSerializer):
 			data["student"] = user_serializers.StudentSerializer(rental_contact.student).data
 		if "bed" in self.fields and bed:
 			data["bed"] = BedSerializer(rental_contact.bed).data
-		if "room" in self.fields and room:
-			data["room"] = RoomSerializer(rental_contact.room).data
 
 		return data
 

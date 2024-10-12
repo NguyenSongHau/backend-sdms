@@ -79,7 +79,6 @@ class RentalContact(BaseModel):
 
 	bed = models.OneToOneField(to=Bed, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contact")
 	student = models.ForeignKey(to="users.Student", null=False, blank=False, on_delete=models.CASCADE, related_name="rental_contacts")
-	room = models.ForeignKey(to=Room, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contact")
 
 class BillRentalContact(BaseModel):
 	class Status(models.TextChoices):
