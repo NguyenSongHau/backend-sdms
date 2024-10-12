@@ -7,7 +7,7 @@ from base import perms, paginators
 from rental import serializers as rental_serializers
 from users import serializers as users_serializers
 from users.models import User, Specialist, Manager
-from users.serializers import SpecialistSerializer, ManagerSerializer
+from users.serializers import SpecialistSerializer, ManagerSerializer, UserSerializer
 
 
 class UserViewSet(viewsets.ViewSet):
