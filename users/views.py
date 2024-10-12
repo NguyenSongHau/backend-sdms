@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from base import perms, paginators
+from base.paginators import UserPagination
 from rental import serializers as rental_serializers
 from users import serializers as users_serializers
 from users.models import User, Specialist, Manager
@@ -86,16 +87,16 @@ class UserViewSet(viewsets.ViewSet):
 		specialist_users = User.objects.filter(specialist__in=specialists)
 		manager_users = User.objects.filter(manager__in=managers)
 
+		# Kết hợp danh sách user của chuyên viên và quản lý thành một queryset chung
+		combined_users = specialist_users | manager_users
+
+		# Sử dụng UserPagination để phân trang
+		paginator = UserPagination()
+		paginated_users = paginator.paginate_queryset(combined_users, request)
+
 		# Sử dụng UserSerializer để serialize dữ liệu
-		specialist_serializer = UserSerializer(specialist_users, many=True)
-		manager_serializer = UserSerializer(manager_users, many=True)
+		serializer = UserSerializer(paginated_users, many=True)
 
-		# Kết hợp danh sách user của chuyên viên và quản lý thành một danh sách chung
-		combined_results = specialist_serializer.data + manager_serializer.data
-
-		response_data = {
-			"results": combined_results
-		}
-
-		return Response(response_data, status=status.HTTP_200_OK)
+		# Trả về kết quả phân trang
+		return paginator.get_paginated_response(serializer.data)
 
