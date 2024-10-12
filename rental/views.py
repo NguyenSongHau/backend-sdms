@@ -169,7 +169,7 @@ class BedViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retrieve
 
 
 class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
-	queryset = RentalContact.objects.select_related("student", "bed", "room").filter(is_active=True).order_by("-id")
+	queryset = RentalContact.objects.select_related("student", "bed").filter(is_active=True).order_by("-id")
 	serializer_class = rental_serializers.RentalContactSerializer
 	pagination_class = paginators.RentalContactPaginators
 
