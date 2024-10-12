@@ -74,15 +74,23 @@ class UserViewSet(viewsets.ViewSet):
 		serializer = rental_serializers.RentalContactSerializer(rental_contacts, many=True)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+	from users.serializers import UserSerializer
+
 	@action(detail=False, methods=["get"], url_path="specialists-managers")
 	def get_all_specialists_and_managers(self, request):
+		# Lấy tất cả chuyên viên và quản lý đang active
 		specialists = Specialist.objects.filter(user__is_active=True)
 		managers = Manager.objects.filter(user__is_active=True)
 
-		specialist_serializer = SpecialistSerializer(specialists, many=True)
-		manager_serializer = ManagerSerializer(managers, many=True)
+		# Lấy danh sách user của chuyên viên và quản lý
+		specialist_users = User.objects.filter(specialist__in=specialists)
+		manager_users = User.objects.filter(manager__in=managers)
 
-		# Kết hợp danh sách chuyên viên và quản lý thành một danh sách chung
+		# Sử dụng UserSerializer để serialize dữ liệu
+		specialist_serializer = UserSerializer(specialist_users, many=True)
+		manager_serializer = UserSerializer(manager_users, many=True)
+
+		# Kết hợp danh sách user của chuyên viên và quản lý thành một danh sách chung
 		combined_results = specialist_serializer.data + manager_serializer.data
 
 		response_data = {
@@ -90,3 +98,4 @@ class UserViewSet(viewsets.ViewSet):
 		}
 
 		return Response(response_data, status=status.HTTP_200_OK)
+
