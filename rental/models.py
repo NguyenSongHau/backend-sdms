@@ -1,6 +1,5 @@
 import uuid
 
-from cloudinary.models import CloudinaryField
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 
@@ -46,7 +45,7 @@ class Post(BaseModel):
 class Bed(BaseModel):
 	class Status(models.TextChoices):
 		VACUITY = "VACUITY", "Trống"
-		NONVACUITY = "NONVACUITY", "Không trống"
+		NONVACUITY = "NONVACUITY", "Đã thuê"
 
 	name = models.CharField(max_length=255, null=False, blank=False)
 	price = models.FloatField(null=True, blank=True)
@@ -69,10 +68,10 @@ class RentalContact(BaseModel):
 	objects = None
 
 	class Status(models.TextChoices):
-		CANCEL = "CANCEL", "Hủy"
+		CANCEL = "CANCEL", "Đã Hủy"
 		PROCESSING = "PROCESSING", "Đang xử lý"
 		SUCCESS = "SUCCESS", "Thành công"
-		FAIL = "FAIL", "Thất bại"
+		FAIL = "FAIL", "Từ chối"
 
 	rental_number = models.UUIDField(null=False, blank=False, unique=True, db_index=True, editable=False, default=uuid.uuid4)
 	time_rental = models.CharField(max_length=255, null=False, blank=False)
@@ -80,7 +79,7 @@ class RentalContact(BaseModel):
 
 	bed = models.OneToOneField(to=Bed, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contact")
 	student = models.ForeignKey(to="users.Student", null=False, blank=False, on_delete=models.CASCADE, related_name="rental_contacts")
-
+	room = models.ForeignKey(to=Room, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contact")
 
 class BillRentalContact(BaseModel):
 	class Status(models.TextChoices):
