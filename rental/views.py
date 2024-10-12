@@ -169,7 +169,7 @@ class BedViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retrieve
 
 
 class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
-	queryset = RentalContact.objects.select_related("student", "bed").filter(is_active=True).order_by("-id")
+	queryset = RentalContact.objects.select_related("student", "bed", "room").filter(is_active=True).order_by("-id")
 	serializer_class = rental_serializers.RentalContactSerializer
 	pagination_class = paginators.RentalContactPaginators
 
@@ -188,6 +188,9 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
 
 			bed_id = self.request.query_params.get("bed_id")
 			queryset = queryset.filter(bed_id=bed_id) if bed_id else queryset
+
+			room_id = self.request.query_params.get("room_id")
+			queryset = queryset.filter(room_id=room_id) if room_id else queryset
 
 		return queryset
 
@@ -213,9 +216,8 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
 		rental_contact.status = RentalContact.Status.SUCCESS
 		rental_contact.save()
 
-		# Update the bed status to NONVACUITY
 		bed = rental_contact.bed
-		bed.status = Bed.Status.NONVACUITY  # Assuming NONVACUITY is defined in the Bed model
+		bed.status = Bed.Status.NONVACUITY
 		bed.save()
 
 		serializer = self.get_serializer_class()(rental_contact)
