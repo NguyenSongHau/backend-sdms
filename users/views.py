@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from base import perms, paginators
 from rental import serializers as rental_serializers
 from users import serializers as users_serializers
-from users.models import User
+from users.models import User, Specialist, Manager
+from users.serializers import SpecialistSerializer, ManagerSerializer
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -72,3 +73,20 @@ class UserViewSet(viewsets.ViewSet):
 
 		serializer = rental_serializers.RentalContactSerializer(rental_contacts, many=True)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+	@action(detail=False, methods=["get"], url_path="specialists-managers")
+	def get_all_specialists_and_managers(self, request):
+		specialists = Specialist.objects.filter(user__is_active=True)
+		managers = Manager.objects.filter(user__is_active=True)
+
+		specialist_serializer = SpecialistSerializer(specialists, many=True)
+		manager_serializer = ManagerSerializer(managers, many=True)
+
+		# Kết hợp danh sách chuyên viên và quản lý thành một danh sách chung
+		combined_results = specialist_serializer.data + manager_serializer.data
+
+		response_data = {
+			"results": combined_results
+		}
+
+		return Response(response_data, status=status.HTTP_200_OK)
