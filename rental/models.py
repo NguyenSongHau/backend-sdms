@@ -65,20 +65,21 @@ class Bed(BaseModel):
 
 
 class RentalContact(BaseModel):
-	objects = None
+    objects = None
 
-	class Status(models.TextChoices):
-		CANCEL = "CANCEL", "Đã Hủy"
-		PROCESSING = "PROCESSING", "Đang xử lý"
-		SUCCESS = "SUCCESS", "Thành công"
-		FAIL = "FAIL", "Từ chối"
+    class Status(models.TextChoices):
+        CANCEL = "CANCEL", "Đã Hủy"
+        PROCESSING = "PROCESSING", "Đang xử lý"
+        SUCCESS = "SUCCESS", "Thành công"
+        FAIL = "FAIL", "Từ chối"
 
-	rental_number = models.UUIDField(null=False, blank=False, unique=True, db_index=True, editable=False, default=uuid.uuid4)
-	time_rental = models.CharField(max_length=255, null=False, blank=False)
-	status = models.CharField(max_length=255, null=False, blank=False, choices=Status.choices, default=Status.PROCESSING)
+    rental_number = models.UUIDField(null=False, blank=False, unique=True, db_index=True, editable=False, default=uuid.uuid4)
+    time_rental = models.CharField(max_length=255, null=False, blank=False)
+    status = models.CharField(max_length=255, null=False, blank=False, choices=Status.choices, default=Status.PROCESSING)
 
-	bed = models.OneToOneField(to=Bed, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contact")
-	student = models.ForeignKey(to="users.Student", null=False, blank=False, on_delete=models.CASCADE, related_name="rental_contacts")
+    bed = models.OneToOneField(to=Bed, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contact")
+    student = models.ForeignKey(to="users.Student", null=False, blank=False, on_delete=models.CASCADE, related_name="rental_contacts")
+    room = models.ForeignKey(to=Room, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contacts")
 
 class BillRentalContact(BaseModel):
 	class Status(models.TextChoices):
