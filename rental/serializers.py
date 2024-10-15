@@ -124,24 +124,22 @@ class BedSerializer(BaseSerializer):
 class RentalContactSerializer(BaseSerializer):
     class Meta:
         model = RentalContact
-        fields = ["id", "rental_number", "time_rental", "status", "created_date", "updated_date", "student", "room"]
+        fields = ["id", "rental_number", "time_rental", "status", "created_date", "updated_date", "bed", "student", "room"]
 
     def to_representation(self, rental_contact):
         data = super().to_representation(rental_contact)
         student = data.get("student")
+        bed = data.get("bed")
         room = data.get("room")
 
         if "student" in self.fields and student:
             data["student"] = user_serializers.StudentSerializer(rental_contact.student).data
+        if "bed" in self.fields and bed:
+            data["bed"] = BedSerializer(rental_contact.bed).data
         if "room" in self.fields and room:
             data["room"] = RoomSerializer(rental_contact.room).data
 
         return data
-
-    def create(self, validated_data):
-        # Bỏ qua thông tin bed khi tạo mới RentalContact
-        validated_data.pop('bed', None)
-        return super().create(validated_data)
 
 
 class BillRentalContactSerializer(BaseSerializer):

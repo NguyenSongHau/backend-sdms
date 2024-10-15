@@ -169,59 +169,67 @@ class BedViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retrieve
 
 
 class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
-    queryset = RentalContact.objects.select_related("student", "room").filter(is_active=True).order_by("-id")
-    serializer_class = rental_serializers.RentalContactSerializer
-    pagination_class = paginators.RentalContactPaginators
+	queryset = RentalContact.objects.select_related("student", "bed__room").filter(is_active=True).order_by("-id")
+	serializer_class = rental_serializers.RentalContactSerializer
+	pagination_class = paginators.RentalContactPaginators
 
-    def get_queryset(self):
-        queryset = self.queryset
+	def get_queryset(self):
+		queryset = self.queryset
 
-        if self.action.__eq__("list"):
-            rental_number = self.request.query_params.get("rental_number")
-            queryset = queryset.filter(rental_number=rental_number) if rental_number else queryset
+		if self.action.__eq__("list"):
+			rental_number = self.request.query_params.get("rental_number")
+			queryset = queryset.filter(rental_number=rental_number) if rental_number else queryset
 
-            rental_status = self.request.query_params.get("status")
-            queryset = queryset.filter(status=rental_status.upper()) if rental_status else queryset
+			rental_status = self.request.query_params.get("status")
+			queryset = queryset.filter(status=rental_status.upper()) if rental_status else queryset
 
-            student_id = self.request.query_params.get("student_id")
-            queryset = queryset.filter(student_id=student_id) if student_id else queryset
+			student_id = self.request.query_params.get("student_id")
+			queryset = queryset.filter(student_id=student_id) if student_id else queryset
 
-            room_id = self.request.query_params.get("room_id")
-            queryset = queryset.filter(room_id=room_id) if room_id else queryset  # Truy vấn theo room
+			bed_id = self.request.query_params.get("bed_id")
+			queryset = queryset.filter(bed_id=bed_id) if bed_id else queryset
 
-        return queryset
+			# Thêm bộ lọc dựa trên room_id
+			room_id = self.request.query_params.get("room_id")
+			queryset = queryset.filter(bed__room_id=room_id) if room_id else queryset
 
-    def get_permissions(self):
-        if self.action in ["cancel"]:
-            return [perms.IsStudent()]
-        return [perms.IsSpecialist()]
+		return queryset
 
-    @action(methods=["post"], detail=True, url_path="cancel")
-    def cancel(self, request, pk=None):
-        rental_contact = self.get_object()
-        return update_status(rental_contact=rental_contact, new_status=RentalContact.Status.CANCEL, message="Hủy hồ sơ thành công.")
+	def get_permissions(self):
+		if self.action in ["cancel"]:
+			return [perms.IsStudent()]
 
-    @action(methods=["post"], detail=True, url_path="confirm")
-    def confirm(self, request, pk=None):
-        rental_contact = self.get_object()
-        specialist = request.user.specialist
+		return [perms.IsSpecialist()]
 
-        if rental_contact.status != RentalContact.Status.PROCESSING:
-            return Response(data={"message": "Duyệt hồ sơ thành công."}, status=status.HTTP_400_BAD_REQUEST)
+	@action(methods=["post"], detail=True, url_path="cancel")
+	def cancel(self, request, pk=None):
+		rental_contact = self.get_object()
+		return update_status(rental_contact=rental_contact, new_status=RentalContact.Status.CANCEL, message="Hủy hồ sơ thành công.")
 
-        rental_contact.status = RentalContact.Status.SUCCESS
-        rental_contact.save()
+	@action(methods=["post"], detail=True, url_path="confirm")
+	def confirm(self, request, pk=None):
+		rental_contact = self.get_object()
+		specialist = request.user.specialist
 
-        # Phần cập nhật trạng thái giường và phòng đã được bỏ qua
-        # Nếu không cần cập nhật trạng thái của bed nữa, bạn có thể bỏ các dòng liên quan đến bed.
+		if rental_contact.status != RentalContact.Status.PROCESSING:
+			return Response(data={"message": "Duyệt hồ sơ thành công."}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = self.get_serializer_class()(rental_contact)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+		rental_contact.status = RentalContact.Status.SUCCESS
+		rental_contact.save()
 
-    @action(methods=["post"], detail=True, url_path="reject")
-    def reject(self, request, pk=None):
-        rental_contact = self.get_object()
-        return update_status(rental_contact=rental_contact, new_status=RentalContact.Status.FAIL, message="Đã từ chối hồ sơ.")
+		# Cập nhật trạng thái giường và phòng
+		bed = rental_contact.bed
+		room = bed.room  # Lấy phòng liên kết từ giường
+		bed.status = Bed.Status.NONVACUITY
+		bed.save()
+
+		serializer = self.get_serializer_class()(rental_contact)
+		return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+	@action(methods=["post"], detail=True, url_path="reject")
+	def reject(self, request, pk=None):
+		rental_contact = self.get_object()
+		return update_status(rental_contact=rental_contact, new_status=RentalContact.Status.FAIL, message="Đã từ chối hồ sơ.")
 
 
 class BillRentalContactViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveDestroyAPIView):
