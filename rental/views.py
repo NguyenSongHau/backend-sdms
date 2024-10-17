@@ -72,6 +72,12 @@ class PostViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retriev
 
 		return [permissions.AllowAny()]
 
+	def get_serializer(self, *args, **kwargs):
+		# Truyền thêm action vào context để sử dụng trong serializer
+		kwargs['context'] = self.get_serializer_context()
+		kwargs['context']['action'] = self.action  # Truyền action vào context
+		return super().get_serializer(*args, **kwargs)
+
 	def get_serializer_class(self):
 		if self.request.user.is_authenticated:
 			return rental_serializers.AuthenticatedPostSerializer
@@ -87,7 +93,6 @@ class PostViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retriev
 
 			return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-		# Method GET
 		comments = self.get_object().comments.select_related("user").order_by("-id")
 		paginator = paginators.CommentPaginators()
 		page = paginator.paginate_queryset(queryset=comments, request=request)

@@ -49,10 +49,11 @@ class PostSerializer(BaseSerializer):
 		image = data.get("image")
 		room = data.get("room")
 
+		if self.context.get('action') == 'list':
+			data.pop('room', None)
+
 		if "image" in self.fields and image:
 			data["image"] = post.image.url
-		if "room" in self.fields and room:
-			data["room"] = RoomSerializer(post.room).data
 
 		return data
 
