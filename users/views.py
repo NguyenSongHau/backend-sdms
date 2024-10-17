@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import check_password
 from rest_framework import parsers, permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 from base import perms, paginators
@@ -75,28 +76,33 @@ class UserViewSet(viewsets.ViewSet):
 		serializer = rental_serializers.RentalContactSerializer(rental_contacts, many=True)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-	from users.serializers import UserSerializer
+	@action(methods=["get"], detail=False, url_path="students/rental-contacts/(?P<rental_contact_id>[^/.]+)")
+	def get_rental_contact_details(self, request, rental_contact_id):
+		# Lấy thông tin student từ request user
+		student = request.user.student
+
+		# Tìm rental contact dựa trên student và rental_contact_id
+		rental_contact = get_object_or_404(student.rental_contacts, id=rental_contact_id)
+
+		# Sử dụng serializer để trả về thông tin chi tiết rental contact
+		serializer = rental_serializers.RentalContactSerializer(rental_contact)
+
+		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 	@action(detail=False, methods=["get"], url_path="specialists-managers")
 	def get_all_specialists_and_managers(self, request):
-		# Lấy tất cả chuyên viên và quản lý đang active
 		specialists = Specialist.objects.filter(user__is_active=True)
 		managers = Manager.objects.filter(user__is_active=True)
 
-		# Lấy danh sách user của chuyên viên và quản lý
 		specialist_users = User.objects.filter(specialist__in=specialists)
 		manager_users = User.objects.filter(manager__in=managers)
 
-		# Kết hợp danh sách user của chuyên viên và quản lý thành một queryset chung
 		combined_users = specialist_users | manager_users
 
-		# Sử dụng UserPagination để phân trang
 		paginator = UserPagination()
 		paginated_users = paginator.paginate_queryset(combined_users, request)
 
-		# Sử dụng UserSerializer để serialize dữ liệu
 		serializer = UserSerializer(paginated_users, many=True)
 
-		# Trả về kết quả phân trang
 		return paginator.get_paginated_response(serializer.data)
 
