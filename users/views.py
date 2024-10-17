@@ -1,4 +1,5 @@
 from django.contrib.auth.hashers import check_password
+from django.shortcuts import get_object_or_404
 from rest_framework import parsers, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -76,7 +77,14 @@ class UserViewSet(viewsets.ViewSet):
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 	@action(methods=["get"], detail=True, url_path="students/rental-contacts/(?P<rental_contact_id>[^/.]+)")
-	def get_rental_contact_detail(self, request, rental_contact_id=None):
+	@action(methods=["get"], detail=False, url_path="students/rental-contacts/detail")
+	def get_rental_contact_detail(self, request):
+		rental_contact_id = request.query_params.get("rental_contact_id")
+
+		if not rental_contact_id:
+			return Response(data={"detail": "Thiếu rental_contact_id trong query params"},
+							status=status.HTTP_400_BAD_REQUEST)
+
 		student = request.user.student  # Giả định rằng bạn đã xác định một quan hệ 1-1 giữa User và Student
 		rental_contact = get_object_or_404(student.rental_contacts, pk=rental_contact_id)
 
