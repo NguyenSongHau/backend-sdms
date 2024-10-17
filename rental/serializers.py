@@ -47,12 +47,17 @@ class PostSerializer(BaseSerializer):
 	def to_representation(self, post):
 		data = super().to_representation(post)
 		image = data.get("image")
-		room = data.get("room")
+
+		if self.context.get('action') == 'list':
+			data.pop('room', None)
+		else:
+			if "room" in self.fields and post.room:
+				data["room"] = RoomSerializer(post.room).data
+				if hasattr(post.room, 'bed'):
+					data["bed"] = BedSerializer(post.room.bed).data
 
 		if "image" in self.fields and image:
 			data["image"] = post.image.url
-		if "room" in self.fields and room:
-			data["room"] = RoomSerializer(post.room).data
 
 		return data
 

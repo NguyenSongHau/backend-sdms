@@ -72,6 +72,11 @@ class PostViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retriev
 
 		return [permissions.AllowAny()]
 
+	def get_serializer(self, *args, **kwargs):
+		kwargs['context'] = self.get_serializer_context()
+		kwargs['context']['action'] = self.action
+		return super().get_serializer(*args, **kwargs)
+
 	def get_serializer_class(self):
 		if self.request.user.is_authenticated:
 			return rental_serializers.AuthenticatedPostSerializer
