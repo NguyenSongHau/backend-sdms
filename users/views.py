@@ -1,12 +1,13 @@
 from django.contrib.auth.hashers import check_password
-from django.shortcuts import get_object_or_404
 from rest_framework import parsers, permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 from base import perms, paginators
 from base.paginators import UserPagination
 from rental import serializers as rental_serializers
+from rental.models import RentalContact
 from users import serializers as users_serializers
 from users.models import User, Specialist, Manager
 from users.serializers import SpecialistSerializer, ManagerSerializer, UserSerializer
@@ -76,21 +77,13 @@ class UserViewSet(viewsets.ViewSet):
 		serializer = rental_serializers.RentalContactSerializer(rental_contacts, many=True)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-	@action(methods=["get"], detail=True, url_path="students/rental-contacts/(?P<rental_contact_id>[^/.]+)")
-	@action(methods=["get"], detail=False, url_path="students/rental-contacts/detail")
-	def get_rental_contact_detail(self, request):
-		rental_contact_id = request.query_params.get("rental_contact_id")
-
-		if not rental_contact_id:
-			return Response(data={"detail": "Thiếu rental_contact_id trong query params"},
-							status=status.HTTP_400_BAD_REQUEST)
-
-		student = request.user.student  # Giả định rằng bạn đã xác định một quan hệ 1-1 giữa User và Student
-		rental_contact = get_object_or_404(student.rental_contacts, pk=rental_contact_id)
+	@action(detail=True, methods=["get"], url_path="students/rental-contacts/(?P<pk>[^/.]+)")
+	def get_rental_contact_detail(self, request, pk=None):
+		rental_contact = get_object_or_404(RentalContact, pk=pk, student=request.user.student)
 
 		serializer = rental_serializers.RentalContactSerializer(rental_contact)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
-	
+
 	@action(detail=False, methods=["get"], url_path="specialists-managers")
 	def get_all_specialists_and_managers(self, request):
 		specialists = Specialist.objects.filter(user__is_active=True)
