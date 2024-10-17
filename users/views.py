@@ -77,13 +77,6 @@ class UserViewSet(viewsets.ViewSet):
 		serializer = rental_serializers.RentalContactSerializer(rental_contacts, many=True)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-	@action(detail=True, methods=["get"], url_path="students/rental-contacts/(?P<pk>[^/.]+)")
-	def get_rental_contact_detail(self, request, pk=None):
-		rental_contact = get_object_or_404(RentalContact, pk=pk, student=request.user.student)
-
-		serializer = rental_serializers.RentalContactSerializer(rental_contact)
-		return Response(data=serializer.data, status=status.HTTP_200_OK)
-
 	@action(detail=False, methods=["get"], url_path="specialists-managers")
 	def get_all_specialists_and_managers(self, request):
 		specialists = Specialist.objects.filter(user__is_active=True)
