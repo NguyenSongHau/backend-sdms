@@ -29,7 +29,7 @@ class UserViewSet(viewsets.ViewSet):
 		if self.action in ["current_user", "update_current_user"]:
 			return [permissions.IsAuthenticated()]
 
-		if self.action in ["get_all_rental_contacts"]:
+		if self.action in ["get_all_rental_contacts", "get_rental_contact_detail"]:
 			return [perms.IsStudent()]
 
 		return [permissions.AllowAny()]
@@ -75,6 +75,15 @@ class UserViewSet(viewsets.ViewSet):
 			return paginator.get_paginated_response(serializer.data)
 
 		serializer = rental_serializers.RentalContactSerializer(rental_contacts, many=True)
+		return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+	@action(methods=["get"], detail=True, url_path="students/rental-contact-detail")
+	def get_rental_contact_detail(self, request, pk=None):
+		# Lấy RentalContact cụ thể
+		rental_contact = get_object_or_404(RentalContact, id=pk)
+
+		# Serialize và trả về thông tin chi tiết của RentalContact
+		serializer = rental_serializers.RentalContactSerializer(rental_contact)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 	@action(detail=False, methods=["get"], url_path="specialists-managers")
