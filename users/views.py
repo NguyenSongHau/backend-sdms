@@ -16,7 +16,7 @@ from users.serializers import SpecialistSerializer, ManagerSerializer, UserSeria
 class UserViewSet(viewsets.ViewSet):
 	queryset = User.objects.filter(is_active=True)
 	serializer_class = users_serializers.UserSerializer
-	parser_classes = [parsers.MultiPartParser, ]
+	parser_classes = [parsers.MultiPartParser]
 
 	def get_queryset(self):
 		queryset = self.queryset
@@ -77,10 +77,9 @@ class UserViewSet(viewsets.ViewSet):
 		serializer = rental_serializers.RentalContactSerializer(rental_contacts, many=True)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-	@action(methods=["get"], detail=False, url_path="rental-contact-detail")
+	@action(methods=["get"], detail=False, url_path="rental-contact-detail/(?P<pk>[^/.]+)")
 	def get_rental_contact_detail(self, request, pk=None):
 		rental_contact = get_object_or_404(RentalContact, id=pk)
-
 		serializer = rental_serializers.RentalContactSerializer(rental_contact)
 		return Response(data=serializer.data, status=status.HTTP_200_OK)
 
