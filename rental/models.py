@@ -77,7 +77,7 @@ class RentalContact(BaseModel):
     time_rental = models.CharField(max_length=255, null=False, blank=False)
     status = models.CharField(max_length=255, null=False, blank=False, choices=Status.choices, default=Status.PROCESSING)
 
-    bed = models.OneToOneField(to=Bed, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contact")
+    bed = models.ForeignKey(to=Bed, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contact")
     student = models.ForeignKey(to="users.Student", null=False, blank=False, on_delete=models.CASCADE, related_name="rental_contacts")
     room = models.ForeignKey(to=Room, null=True, blank=True, on_delete=models.SET_NULL, related_name="rental_contacts")
 

@@ -161,7 +161,7 @@ class BedViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retrieve
 
         rental_contact = RentalContact.objects.create(bed=bed, room_id=room_id, student=student,
                                                       time_rental=time_rental)
-        
+
         serializer = rental_serializers.RentalContactSerializer(rental_contact)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
