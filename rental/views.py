@@ -145,8 +145,6 @@ class BedViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.Retrieve
         return [permissions.AllowAny()]
 
     @action(methods=["post"], detail=True, url_path="rent")
-    @action(methods=["post"], detail=True, url_path="rent")
-    @action(methods=["post"], detail=True, url_path="rent")
     def rent_bed(self, request, pk=None):
         time_rental = 12
         student = request.user.student
@@ -237,7 +235,6 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
         rental_contact = self.get_object()
         return update_status(rental_contact=rental_contact, new_status=RentalContact.Status.FAIL,
                              message="Đã từ chối hồ sơ.")
-
 
 class BillRentalContactViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveDestroyAPIView):
     queryset = BillRentalContact.objects.select_related("student", "specialist", "rental_contact").filter(
