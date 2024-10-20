@@ -237,7 +237,12 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
         update_status(rental_contact=rental_contact, new_status=RentalContact.Status.FAIL,
                       message="Đã từ chối hồ sơ.")
         serializer = self.get_serializer_class()(rental_contact)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        # Add message to the response data
+        response_data = serializer.data
+        response_data["message"] = "Đã từ chối hồ sơ."
+
+        return Response(data=response_data, status=status.HTTP_200_OK)
 
 class BillRentalContactViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveDestroyAPIView):
     queryset = BillRentalContact.objects.select_related("student", "specialist", "rental_contact").filter(
