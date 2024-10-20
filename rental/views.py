@@ -217,32 +217,27 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
         specialist = request.user.specialist
 
         if rental_contact.status != RentalContact.Status.PROCESSING:
-            return Response(data={"message": "Duyệt hồ sơ thành công."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"message": "Hồ sơ không trong trạng thái xử lý."}, status=status.HTTP_400_BAD_REQUEST)
 
         rental_contact.status = RentalContact.Status.SUCCESS
         rental_contact.save()
 
-        # Cập nhật trạng thái giường và phòng
         bed = rental_contact.bed
-        room = bed.room  # Lấy phòng liên kết từ giường
+        room = bed.room
         bed.status = Bed.Status.NONVACUITY
         bed.save()
 
-        serializer = self.get_serializer_class()(rental_contact)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        # Chỉ trả về thông báo thành công
+        return Response(data={"message": "Duyệt hồ sơ thành công."}, status=status.HTTP_200_OK)
 
     @action(methods=["post"], detail=True, url_path="reject")
     def reject(self, request, pk=None):
         rental_contact = self.get_object()
         update_status(rental_contact=rental_contact, new_status=RentalContact.Status.FAIL,
                       message="Đã từ chối hồ sơ.")
-        serializer = self.get_serializer_class()(rental_contact)
 
-        # Add message to the response data
-        response_data = serializer.data
-        response_data["message"] = "Đã từ chối hồ sơ."
-
-        return Response(data=response_data, status=status.HTTP_200_OK)
+        # Chỉ trả về thông báo
+        return Response({"message": "Đã từ chối hồ sơ."}, status=status.HTTP_200_OK)
 
 class BillRentalContactViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.RetrieveDestroyAPIView):
     queryset = BillRentalContact.objects.select_related("student", "specialist", "rental_contact").filter(
