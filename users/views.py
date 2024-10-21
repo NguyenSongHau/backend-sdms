@@ -60,7 +60,12 @@ class UserViewSet(viewsets.ViewSet):
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
 
-		return Response(data=serializer.data, status=status.HTTP_200_OK)
+		# Format the date of birth to dd-mm-yyyy
+		response_data = serializer.data
+		if request.user.dob:
+			response_data['dob'] = request.user.dob.strftime("%d-%m-%Y")
+
+		return Response(data=response_data, status=status.HTTP_200_OK)
 
 	@action(methods=["get"], detail=False, url_path="students/rental-contacts")
 	def get_all_rental_contacts(self, request):
