@@ -70,8 +70,8 @@ class RentalContact(BaseModel):
     class Status(models.TextChoices):
         CANCEL = "CANCEL", "Đã Hủy"
         PROCESSING = "PROCESSING", "Đang xử lý"
-        SUCCESS = "SUCCESS", "Thành công"
-        FAIL = "FAIL", "Từ chối"
+        SUCCESS = "SUCCESS", "Đạt"
+        FAIL = "FAIL", "Không đạt"
 
     rental_number = models.UUIDField(null=False, blank=False, unique=True, db_index=True, editable=False, default=uuid.uuid4)
     time_rental = models.CharField(max_length=255, null=False, blank=False)

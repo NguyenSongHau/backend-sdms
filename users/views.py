@@ -10,7 +10,7 @@ from rental import serializers as rental_serializers
 from rental.models import RentalContact
 from users import serializers as users_serializers
 from users.models import User, Specialist, Manager
-from users.serializers import SpecialistSerializer, ManagerSerializer, UserSerializer
+from users.serializers import UserSerializer
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -60,7 +60,6 @@ class UserViewSet(viewsets.ViewSet):
 		serializer.is_valid(raise_exception=True)
 		serializer.save()
 
-		# Format the date of birth to dd-mm-yyyy
 		response_data = serializer.data
 		if request.user.dob:
 			response_data['dob'] = request.user.dob.strftime("%d-%m-%Y")
