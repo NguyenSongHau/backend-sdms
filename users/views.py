@@ -74,7 +74,7 @@ class UserViewSet(viewsets.ViewSet):
 
         rental_number = request.query_params.get("rental_number")
         if rental_number:
-            rental_contacts = rental_contacts.filter(rental_number=rental_number)
+            rental_contacts = rental_contacts.filter(rental_number__icontains=rental_number)
 
         rental_status = request.query_params.get("status")
         if rental_status:
