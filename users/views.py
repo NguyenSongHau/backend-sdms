@@ -80,18 +80,6 @@ class UserViewSet(viewsets.ViewSet):
         if rental_status:
             rental_contacts = rental_contacts.filter(status=rental_status.upper())
 
-        student_id = request.query_params.get("student_id")
-        if student_id:
-            rental_contacts = rental_contacts.filter(student_id=student_id)
-
-        bed_id = request.query_params.get("bed_id")
-        if bed_id:
-            rental_contacts = rental_contacts.filter(bed_id=bed_id)
-
-        room_id = request.query_params.get("room_id")
-        if room_id:
-            rental_contacts = rental_contacts.filter(bed__room_id=room_id)
-
         paginator = paginators.RentalContactPaginators()
         page = paginator.paginate_queryset(queryset=rental_contacts, request=request)
         if page is not None:

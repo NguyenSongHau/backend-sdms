@@ -188,15 +188,6 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
             rental_status = self.request.query_params.get("status")
             queryset = queryset.filter(status=rental_status.upper()) if rental_status else queryset
 
-            student_id = self.request.query_params.get("student_id")
-            queryset = queryset.filter(student_id=student_id) if student_id else queryset
-
-            bed_id = self.request.query_params.get("bed_id")
-            queryset = queryset.filter(bed_id=bed_id) if bed_id else queryset
-
-            room_id = self.request.query_params.get("room_id")
-            queryset = queryset.filter(bed__room_id=room_id) if room_id else queryset
-
         return queryset
 
     def get_permissions(self):
