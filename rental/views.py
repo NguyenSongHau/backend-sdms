@@ -183,10 +183,12 @@ class RentalContactViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retr
 
         if self.action.__eq__("list"):
             rental_number = self.request.query_params.get("rental_number")
-            queryset = queryset.filter(rental_number=rental_number) if rental_number else queryset
+            if rental_number:
+                queryset = queryset.filter(rental_number__icontains=rental_number)
 
             rental_status = self.request.query_params.get("status")
-            queryset = queryset.filter(status=rental_status.upper()) if rental_status else queryset
+            if rental_status:
+                queryset = queryset.filter(status=rental_status.upper())
 
         return queryset
 
